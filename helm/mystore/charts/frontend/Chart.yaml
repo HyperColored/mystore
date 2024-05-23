@@ -1,0 +1,7 @@
+---
+apiVersion: v2
+type: application
+name: frontend
+description: Chart for front
+version: 1.0.1
+appVersion: "1.0"

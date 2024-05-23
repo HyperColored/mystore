@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configMap }}
+data:
+  nginx.conf: |
+    server {
+      listen 80;
+      location / {
+        root /usr/share/nginx/html;
+        index index.html;
+      }
+      location /auth/whoami {
+        proxy_pass http://backend:8081;
+      }
+      location /products {
+        proxy_pass http://backend:8081/products;
+      }
+      location /categories {
+        proxy_pass http://backend:8081/categories;
+      }
+      location /orders {
+        proxy_pass http://backend:8081/orders;
+      }
+      location /metrics {
+        alias /app/frontend/;
+      }
+    }

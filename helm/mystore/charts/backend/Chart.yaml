@@ -1,0 +1,7 @@
+---
+apiVersion: v2
+type: application
+name: backend
+description: Chart for back
+version: 1.0.0
+appVersion: "1.0"

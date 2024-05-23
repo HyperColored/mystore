@@ -1,0 +1,6 @@
+global:
+  revisionHistoryLimit: 12
+  strategyType: RollingUpdate
+  maxUnavailabe: 1
+  maxSurge: 20%
+  imagePullPolicy: Always

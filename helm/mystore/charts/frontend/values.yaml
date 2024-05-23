@@ -1,0 +1,20 @@
+image:
+  repository: gitlab.praktikum-services.ru:5050/std-024-27/diploma/diplom-frontend
+  tag: latest
+replicas: 1
+resources:
+  limits:
+    memory: "500Mi"
+    cpu: "0.2"
+  requests:
+    memory: "200Mi"
+    cpu: "0.2"
+ports:
+  containerPort: 80
+volumeMounts:
+  mountPath: /etc/nginx/conf.d/
+configMap: frontend-configmap
+ingress:
+  host: "hypercolored.pelmeny-for.fun"
+deploymentName: frontend
+appName: frontend

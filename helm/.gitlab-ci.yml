@@ -1,0 +1,39 @@
+variables:
+   VERSION: 1.0.8
+
+stages:
+  - release
+  - deploy
+
+release_helm:
+  stage: release
+  image:
+    name: alpine/helm:3.13.2
+    entrypoint: [""]
+  environment:
+    name: $CI_COMMIT_REF_SLUG
+    url: https://$FQDN
+  script:
+    - cd helm
+    - helm package mystore
+    - curl -u $NEXUS_REPO_USER:$NEXUS_REPO_PASS $NEXUS_HELM --upload-file mystore*.tgz
+
+deploy_helm:
+  stage: deploy
+  image: 
+    name: alpine/helm:3.13.2
+    entrypoint: [""]
+  when: manual
+  environment:
+    name: $CI_COMMIT_REF_SLUG
+    url: https://$FQDN
+  before_script:
+    - mkdir -p ~/.kube/
+    - cat $KUBECONFIG_FILE > ~/.kube/config
+    - cat ~/.kube/config
+    - chmod 700 ~/.kube/config
+  script:
+    - helm repo add nexus $NEXUS_HELM --username $NEXUS_REPO_USER --password $NEXUS_REPO_PASS
+    - helm repo update
+    - >
+      helm upgrade --install mystore nexus/mystore --namespace default --atomic --timeout 15m 

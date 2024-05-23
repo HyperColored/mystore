@@ -1,0 +1,14 @@
+---
+apiVersion: v2
+type: application
+name: mystore
+description: Diplom Store Helm Chart
+
+version: 1.0.8
+appVersion: "latest"
+
+dependencies:
+  - name: backend
+    version: 1.0.0
+  - name: frontend
+    version: 1.0.2

@@ -1,93 +1,186 @@
-# Mystore
+# Store test application
 
+## Technology stack
 
+### Application
 
-## Getting started
+- **Code management**: Git
+- **Frontend**: HTML, CSS, Vue, Ts, Js
+- **Backend**: Go
+- **CI/CD**: Gitlab CI
+- **Container environment**: Docker
+- **Testing**: Unit, Gitlab SAST, SonarQube
+- **Repository**: Gitlab CI, Nexus
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### Infrastructure
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- **Cloud provider**: Yandex.Cloud
+- **Container environment**: Docker
+- **Container management**: Kubernetes
+- **Infrastructure**: Terraform, S3
+- **Artifact repository**: Nexus
+- **CI/CD**: Gitlab CI
+- **Monitoring**: Prometheus, Alertmanager, Loki, Grafana
+- **Web server**: Ingress-controller, Network Load Balancer, Cert-manager, DNS, Nginx
+- **Deployment**: Helm
+- **Code Management**: Git, Gitlab CI, IaC
 
-## Add your files
+## Dependencies
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+### Backend
+
+| Key | Value | 
+|--------------|-----------|
+| go | 1.17 |
+| Docker image go | golang:1.17.13-alpine3.16 |
+| Docker image release | scratch |
+
+### Frontend
+
+| Key | Value | 
+|--------------|-----------|
+| axios | ^0.24.0 |
+| cookie | ^0.4.1 |
+| core-js | ^3.6.5 |
+| svelte-debouncer | ^0.0.5 |
+| vue | ^3.2.26 |
+| vue-router | ^4.0.0-0 |
+| vuex | ^4.0.2 |
+| typescript | ~4.1.5 |
+| webpack | ^4.39.3 |
+| node | 6.9.0 |
+| Docker image nginx | nginx:1.25.1 |
+| Docker image node | node:16-alpine |
+
+More in `package.json` and `package-lock.json`
+
+## CI/CD variables
+
+### Gitlab CI project:
+
+| Key | Value |
+|--------------|-----------|
+| `DOCKERHUB_PASS` | Dockerhub password credential |
+| `DOCKERHUB_USER` | Dockerhub login credential |
+| `SONAR_LOGIN_BACK` | Sonarqube backend token |
+| `SONAR_LOGIN_FRONT` | Sonarqube frontend token |
+| `NEXUS_REPO_PASSWORD` | Nexus user password credential |
+| `NEXUS_REPO_USER` | Nexus user login credential |
+| `NEXUS_REPO_URL_BACKEND` |  Nexus backend repo URL |
+| `NEXUS_REPO_URL_FRONTEND` | Nexus frontend repo URL |
+| `SONAR_PROJECT_KEY_BACK` | Sonarqube backend project key |
+| `SONAR_PROJECT_KEY_FRONT` | Sonarqube frontend project key |
+| `SONAR_URL` | Sonarqube service URL |
+
+# Infrastructure
+
+## Dependencies
+
+| Key | Values | 
+|--------------|-----------|
+| terraform.required_providers | >= 0.94 |
+| terraform.version | >= 1.4.0 |
+| Yandex Cloud CLI | 0.108.1 |
+| kubectl | v5.0.1 |
+| helm | v3.12.0 |
+| cert-manager | v1.12.0 |
+
+## Infrastructure creation
+
+### Preparatory steps
+
+- [Register YC account](https://cloud.yandex.ru/docs/billing/quickstart/)
+- [Folder creation](https://cloud.yandex.ru/docs/resource-manager/operations/folder/create)
+- [Create service account with Editor permissions](https://cloud.yandex.ru/docs/iam/quickstart-sa#create-sa)
+- [Create static key for SA](https://cloud.yandex.ru/docs/iam/concepts/authorization/key)
+
+### Infrastructure automatic creation
+
+- Clone repository
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/sheriotanda.zh/mystore.git
-git branch -M main
-git push -uf origin main
+git@gitlab.com:sheriotanda.zh/mystore.git
 ```
 
-## Integrate with your tools
+- Move to terraform folder
 
-- [ ] [Set up project integrations](https://gitlab.com/sheriotanda.zh/mystore/-/settings/integrations)
+```
+cd terraform
+```
 
-## Collaborate with your team
+- Create new token in order to gain access to cloud management using terraform
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+```
+IAM_TOKEN=`yc iam create-token`
+```
 
-## Test and Deploy
+- Write this key to the tfvars file:
 
-Use the built-in continuous integration in GitLab.
+```
+ touch ./terraform.tfvars
+ echo $IAM_TOKEN > ./terraform.tfvars
+```
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+- Execute:
 
-***
+```
+terraform init
+terraform apply -auto-approve
+```
 
-# Editing this README
+### Создание доступа в кластер для CI/CD
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+- return to the repo root folder
 
-## Suggestions for a good README
+```
+cd ../
+```
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+- check the list of clusters available from the cloud:
 
-## Name
-Choose a self-explaining name for your project.
+```
+yc managed-kubernetes cluster list
+```
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+- create configuration neede for gaining access to the cloud:
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+```
+yc managed-kubernetes cluster get-credentials <cluster_id> --external --kubeconfig ./.kube/config
+```
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+- [Install latest version of kubectl utility](https://kubernetes.io/ru/docs/tasks/tools/install-kubectl/)
+- Create 3 objects in cloud cluster (ClusterRoleBinding, Secret и ServiceAccount) using manifest:
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+```
+kubectl create -f k8s-additional/sa.yaml
+```
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+## Services installation
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+### Подготовительные работы
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+- [Install helm](https://helm.sh/ru/docs/intro/install/)
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+```
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+```
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+### Ingress
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+- Install Ingress-controller
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+```
+helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx
+```
 
-## License
-For open source projects, say how it is licensed.
+## Application installation
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+- is automatic via CI/CD configuration
+
+## Infrastructure destruction
+
+```
+terraform destroy -auto-approve
+```
