@@ -128,7 +128,7 @@ terraform init
 terraform apply -auto-approve
 ```
 
-### Создание доступа в кластер для CI/CD
+### Enable access to the cluster for CI/CD purpose
 
 - return to the repo root folder
 
@@ -157,7 +157,7 @@ kubectl create -f k8s-additional/sa.yaml
 
 ## Services installation
 
-### Подготовительные работы
+### Preparatory steps
 
 - [Install helm](https://helm.sh/ru/docs/intro/install/)
 
