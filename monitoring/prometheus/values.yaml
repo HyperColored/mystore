@@ -1,0 +1,10 @@
+---
+folderId: folderId
+bearerToken: token
+namespace: namespace
+port: 9090
+selectorType: ClusterIP
+fqdn: fqdn
+replicasCount: 1
+resourcesCPU: 1
+resourcesMem: 1Gi

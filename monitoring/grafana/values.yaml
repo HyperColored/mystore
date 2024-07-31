@@ -1,0 +1,13 @@
+---
+namespace: namespace
+port: 3000
+selectorType: ClusterIP
+fqdn: fqdn
+resourceStorage: 1Gi
+csiDriver: disk-csi-driver.mks.ycloud.io
+csiFsType: ext4
+grafanaDiskId: fd8s0rs9nmtku47an507
+storageClassName: yc-network-hdd
+imagePullPolicy: IfNotPresent
+resourcesCPU: 250m
+resourcesMem: 750Mi
